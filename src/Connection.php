@@ -86,8 +86,23 @@ class Connection extends BaseOptions{
     public function open()
     {
         try
-        { 
-            $this->AMQPConnection = new AMQPConnection($this->host, $this->port, $this->username, $this->password, $this->vhost);
+        {
+            $this->AMQPConnection = new AMQPConnection(
+                $this->host,
+                $this->port,
+                $this->username,
+                $this->password,
+                $this->vhost,
+                false,      //insist
+                "AMQPLAIN", //login_method
+                null,       //login_response
+                "en_US",    //locale
+                3,          //connection_timeout
+                50,         //read_write_timeout should be 2x heartbeat https://github.com/pascaldevink/RabbitMqBundle/tree/0899d6b8147c6bce4180a2c619498200a68291a5#import-notice---heartbeats
+                null,       //context (ssl)
+                true,       //keepalive
+                25          //heartbeat
+            );
             $this->channel = $this->AMQPConnection->channel();
             $this->channel->queue_declare($this->queue_name, false, true, false, false);
             $this->channel->exchange_declare($this->exchange, 'direct', false, true, false);
